@@ -66,8 +66,7 @@ class Plane {
   int i = 0;
 
   void push(int x, int y, int z) {
-    points[i] = new Point3d(x, y, z);
-    i++;
+    points[i++] = new Point3d(x, y, z);
   }
 
   void render() {
