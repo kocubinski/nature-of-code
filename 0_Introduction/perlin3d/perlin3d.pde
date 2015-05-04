@@ -1,134 +1,62 @@
-float x, y, z;
-
-void static_shapes() {
-  size(640, 360, P3D);
-  background(0);
-  lights();
-
-  pushMatrix();
-  translate(130, height / 2, 0);
-  rotateY(1.25);
-  rotateX(-0.4);
-  noStroke();
-  box(100);
-  popMatrix();
-
-  pushMatrix();
-  translate(500, height * 0.35, -200);
-  noFill();
-  stroke(255);
-  sphere(280);
-  popMatrix();
-}
-
-void pyramid() {
-  size(640, 360, P3D);
-  background(0);
-
-  translate(width/2, height/2, 0);
-  stroke(255);
-  rotateX(PI/2);
-  rotateZ(-PI/6);
-  noFill();
-
-  beginShape();
-
-  vertex(-100, -100, -100);
-  vertex( 100, -100, -100);
-  vertex(   0,    0,  100);
-
-  vertex( 100, -100, -100);
-  vertex( 100,  100, -100);
-  vertex(   0,    0,  100);
-
-  vertex( 100, 100, -100);
-  vertex(-100, 100, -100);
-  vertex(   0,   0,  100);
-
-  vertex(-100,  100, -100);
-  vertex(-100, -100, -100);
-  vertex(   0,    0,  100);
-  endShape();
-}
-
-class Point3d {
-  int x, y, z;
-
-  Point3d(int x, int y, int z) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-  }
-}
-
-class Shape {
-  Point3d[] points;
-  int size;
-  int i = 0;
-
-  Shape(int size) {
-    this.size = size;
-    points = new Point3d[size];
-  }
-
-  void push(int x, int y, int z) {
-    points[i++] = new Point3d(x, y, z);
-  }
-
-  void render() {
-    beginShape();
-    for (int j = 0; j < size; j++) {
-      Point3d p = points[j];
-      vertex(p.x, p.y, p.z);
-    }
-    endShape(CLOSE);
-  }
-}
-
 void landscape() {
   size(640, 360, P3D);
   background(0);
-  translate(width/2, height/2, 0);
+  lights();
+  translate(0, height - height/6, 0);
   stroke(255);
-  //rotateX(PI/2);
-  //rotateZ(-PI/6);
-  noFill();
-  rotateX(-PI/6);
 
-  Shape p1 = new Shape(4);
-  p1.push(  0,   0,   0);
-  p1.push(  0,   0, -50);
-  p1.push( 50,   0, -50);
-  p1.push( 50,   0,   0);
+  rotateX(-PI/8);
+  rotateY(PI/16);
 
-  Shape p2 = new Shape(4);
-  p2.push( 50,   0,   0);
-  p2.push( 50,   0, -50);
-  p2.push(100, -20, -50);
-  p2.push(100, -30,   0);
+  int pLength = 35;
+  int pDepth = 35;
+  int zSwing = 100;
+  float shapeLength = 25.0;
+  float noiseStep = 0.1;
 
-  p1.render();
-  p2.render();
+  float x = 0;
+  float z = 0;
+  float y = 0;
 
-  int pLength = 10;
-  int pDepth = 10;
-  int shapeLength = 50;
+  float[] lastYs = new float[pLength];
 
-  Shape[] row = new Shape[xLen];
+  for (int i = 0; i < pDepth; i++) {
+    beginShape(QUAD_STRIP);
 
-  for (int i = 0; i < pLength; i++) {
-    Shape s = new Shape(4);
-    int x = i > 0 ? row[i - 1].points[3] : 0;
-    int z = i > 0 ? row[i - 1].points[2] : 0;
-    int y = map(noise(x, z), 0, 1, 50, -50);
+    for (int j = 0; j < pLength; j++) {
+      float xoff;
+      float zoff;
+      x += shapeLength;
+
+      if (i == 0) {
+        xoff = map(x, 0, shapeLength * pLength, 0, noiseStep * pLength);
+        zoff = map(z, 0, shapeLength * pDepth, 0, noiseStep * pDepth);
+        y = map(noise(xoff, zoff), 0, 1, 50, -50);
+      } else {
+        y = lastYs[j];
+      }
+
+      println("(", x, ",", y, ",", z, ")");
+      vertex(x, y, z);
+
+      float z1 = z - shapeLength;
+      xoff = map(x, 0, shapeLength * pLength, 0, noiseStep * pLength);
+      zoff = map(z1, 0, shapeLength * pDepth, 0, noiseStep * pDepth);
+      y = map(noise(xoff, zoff), 0, 1, zSwing, -zSwing);
+      lastYs[j] = y;
+      println("(", x, ",", y, ",", z1, ")");
+      vertex(x, y, z1);
+    }
+
+    endShape();
+
+    x = 0;
+    z -= shapeLength;
   }
+
+  endShape();
 }
 
 void setup() {
-  //static_shapes();
-  //pyramid();
   landscape();
-}
-
-void draw() {
 }
