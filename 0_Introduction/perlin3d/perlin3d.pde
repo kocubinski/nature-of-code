@@ -61,16 +61,27 @@ class Point3d {
   }
 }
 
-class Plane {
-  Point3d[] points = new Point3d[3];
+class Shape {
+  Point3d[] points;
+  int size;
   int i = 0;
+
+  Shape(int size) {
+    this.size = size;
+    points = new Point3d[size];
+  }
 
   void push(int x, int y, int z) {
     points[i++] = new Point3d(x, y, z);
   }
 
   void render() {
-    //for
+    beginShape();
+    for (int j = 0; j < size; j++) {
+      Point3d p = points[j];
+      vertex(p.x, p.y, p.z);
+    }
+    endShape(CLOSE);
   }
 }
 
@@ -84,23 +95,33 @@ void landscape() {
   noFill();
   rotateX(-PI/6);
 
-  beginShape();
+  Shape p1 = new Shape(4);
+  p1.push(  0,   0,   0);
+  p1.push(  0,   0, -50);
+  p1.push( 50,   0, -50);
+  p1.push( 50,   0,   0);
 
-  vertex(   0,    0,    0);
-  vertex(   0,    0,  -50);
-  vertex(  50,    0,  -50);
-  vertex(  50,    0,    0);
+  Shape p2 = new Shape(4);
+  p2.push( 50,   0,   0);
+  p2.push( 50,   0, -50);
+  p2.push(100, -20, -50);
+  p2.push(100, -30,   0);
 
-  endShape(CLOSE);
+  p1.render();
+  p2.render();
 
-  beginShape();
+  int pLength = 10;
+  int pDepth = 10;
+  int shapeLength = 50;
 
-  vertex(  50,    0,    0);
-  vertex(  50,    0,  -50);
-  vertex( 100,  -20,  -50);
-  vertex( 100,  -30,    0);
+  Shape[] row = new Shape[xLen];
 
-  endShape(CLOSE);
+  for (int i = 0; i < pLength; i++) {
+    Shape s = new Shape(4);
+    int x = i > 0 ? row[i - 1].points[3] : 0;
+    int z = i > 0 ? row[i - 1].points[2] : 0;
+    int y = map(noise(x, z), 0, 1, 50, -50);
+  }
 }
 
 void setup() {
