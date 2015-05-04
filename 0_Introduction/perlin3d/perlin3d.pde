@@ -36,7 +36,7 @@ void landscape() {
         y = lastYs[j];
       }
 
-      println("(", x, ",", y, ",", z, ")");
+      //println("(", x, ",", y, ",", z, ")");
       vertex(x, y, z);
 
       float z1 = z - shapeLength;
@@ -44,7 +44,7 @@ void landscape() {
       zoff = map(z1, 0, shapeLength * pDepth, 0, noiseStep * pDepth);
       y = map(noise(xoff, zoff), 0, 1, zSwing, -zSwing);
       lastYs[j] = y;
-      println("(", x, ",", y, ",", z1, ")");
+      //println("(", x, ",", y, ",", z1, ")");
       vertex(x, y, z1);
     }
 
