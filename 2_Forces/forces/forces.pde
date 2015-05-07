@@ -14,6 +14,7 @@ class Mover {
     location.add(velocity);
     velocity.add(acceleration);
     velocity.limit(5);
+    acceleration.mult(0);
   }
 
   void display() {
@@ -22,8 +23,8 @@ class Mover {
     ellipse(location.x,location.y,16,16);
   }
 
-  void accelerate(float x, float y) {
-    acceleration = new PVector(x, y);
+  void applyForce(PVector force) {
+    acceleration.add(force);
   }
 
   void checkEdges() {
@@ -39,4 +40,20 @@ class Mover {
       location.y = height;
     }
   }
+}
+
+Mover mover;
+
+void setup() {
+  size(640, 480);
+  mover = new Mover();
+}
+
+void draw() {
+  if (mousePressed) {
+    PVector wind = new PVector(0.5, 0);
+    mover.applyForce(wind);
+  }
+  mover.update();
+  mover.display();
 }
