@@ -1,0 +1,7 @@
+In case you forget...
+
+skewer runs on top of simple-httpd
+(require 'skewer) embeds skewer.js in any running httpd at /skewer
+from any .html page -- include "http://localhost:8080/skewer" to connect back to emacs
+skewer-mode and skewer-repl push updates to a connected browser
+`httpd-serve-directory' is the command you want to use to server a given dir
