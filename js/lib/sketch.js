@@ -18,11 +18,20 @@ Sketch.sketch = function (pid, w, h) {
     this.elem = c;
     this.ctx = c.getContext('2d');
     this.tick();
+    this.mouse = {pressed: 0};
 
     var rect = c.getBoundingClientRect();
     var self = this;
+
+    c.addEventListener('mouseup', function(e) {
+        self.mouse.pressed = 0;
+    });
+    c.addEventListener('mousedown', function(e) {
+        self.mouse.pressed = 1;
+    });
     c.addEventListener('mousemove', function(e) {
-        self.mouse = {x: e.clientX - rect.left, y: e.clientY - rect.top};
+        self.mouse.x = e.clientX - rect.left;
+        self.mouse.y = e.clientY - rect.top;
     });
 };
 
@@ -91,13 +100,34 @@ Sketch.vector2.prototype.limit = function(max) {
     this.mult(max / mag);
 };
 
+Sketch.vector2.mult = function(f, d) {
+    var v = new Sketch.vector2(f.x * d, f.y * d);
+    return v;
+};
+
 Sketch.vector2.prototype.mult = function(f) {
     this.x *= f;
     this.y *= f;
 };
 
+Sketch.vector2.div = function(f, d) {
+    var v = new Sketch.vector2(f.x / d, f.y / d);
+    return v;
+};
+
+Sketch.vector2.prototype.div = function(f) {
+    this.x /= f;
+    this.y /= f;
+};
+
 Sketch.vector2.prototype.normalize = function(f) {
+    var mag = this.mag();
+    if (mag === 0) return;
     this.mult(1 / this.mag());
+};
+
+Sketch.vector2.prototype.get = function() {
+    return new Sketch.vector2(this.x, this.y);
 };
 
 Sketch.vector2.test = function() {
