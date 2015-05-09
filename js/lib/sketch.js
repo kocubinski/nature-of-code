@@ -18,6 +18,12 @@ Sketch.sketch = function (pid, w, h) {
     this.elem = c;
     this.ctx = c.getContext('2d');
     this.tick();
+
+    var rect = c.getBoundingClientRect();
+    var self = this;
+    c.addEventListener('mousemove', function(e) {
+        self.mouse = {x: e.clientX - rect.left, y: e.clientY - rect.top};
+    });
 };
 
 Sketch.sketch.prototype.onTick = null;
@@ -73,6 +79,25 @@ Sketch.vector2.add = function(v1, v2) {
 Sketch.vector2.prototype.add = function(v) {
     this.x += v.x;
     this.y += v.y;
+};
+
+Sketch.vector2.prototype.mag = function() {
+    return Math.sqrt(this.x * this.x + this.y * this.y);
+};
+
+Sketch.vector2.prototype.limit = function(max) {
+    var mag = this.mag();
+    if (mag <= max) return;
+    this.mult(max / mag);
+};
+
+Sketch.vector2.prototype.mult = function(f) {
+    this.x *= f;
+    this.y *= f;
+};
+
+Sketch.vector2.prototype.normalize = function(f) {
+    this.mult(1 / this.mag());
 };
 
 Sketch.vector2.test = function() {

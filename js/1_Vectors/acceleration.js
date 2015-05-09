@@ -10,6 +10,7 @@ Mover.prototype.draw = function(sketch) {
 };
 
 Mover.prototype.update = function() {
+    this.velocity.limit(5);
     this.location.add(this.velocity);
     this.velocity.add(this.acceleration);
 };
@@ -32,6 +33,14 @@ Mover.prototype.checkEdges = function(sketch) {
 
 var s, m;
 
+function accelerateToMouse(mover, mouse) {
+    if (!mouse) return;
+    var a = new Sketch.vector2(mouse.x - m.location.x, mouse.y - m.location.y);
+    a.normalize();
+    a.mult(0.3);
+    mover.acceleration = a;
+}
+
 function setup() {
     m = new Mover();
     s = s || new Sketch.sketch('canvas', 600, 600);
@@ -42,8 +51,10 @@ function setup() {
 
 function draw(sketch) {
     sketch.clear();
-    m.location.x += 5;
+    //m.acceleration = new Sketch.vector2(0.1, 0);
+    accelerateToMouse(m, sketch.mouse);
     m.checkEdges(sketch);
+    m.update();
     m.draw(sketch);
 }
 
