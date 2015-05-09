@@ -1,56 +1,56 @@
-function Vector(x, y) {
-    this.x = x;
-    this.y = y;
-}
-
-function Scene(selector) {
-    this.canvas = $('#canvas');
-    this.ctx = scene.canvas.get(0).getContext('2d');
-}
-
-Scene.prototype.tick = function() {
-    draw(this.canvas, this.ctx);
-    window.requestAnimationFrame(this.tick);
-};
-
-Scene.prototype.run = function() {
-    setup(this.ctx);
-    window.requestAnimationFrame(this.tick);
-};
-
-Scene.prototype.circle = function(radius, location, color) {
-    var c = scene.ctx;
-    c.beginPath();
-    c.arc(this.x, this.y, this.size, 2 * Math.PI, false);
-    c.fillStyle = 'green';
-    c.fill();
-    c.lineWidth = 2;
-    c.strokeStyle = 'black';
-    c.stroke();
-};
-
-function Mover(ctx) {
-    this.ctx = ctx;
-    this.x = 100;
-    this.y = 100;
+function Mover() {
+    this.location = new Sketch.vector2(100, 100);
+    this.velocity = new Sketch.vector2(0, 0);
+    this.acceleration = new Sketch.vector2(0, 0);
     this.size = 20;
 }
 
-Mover.prototype.draw = function() {
-    var c = this.ctx;
+Mover.prototype.draw = function(sketch) {
+    sketch.circle(this.size, this.location, {color: "green"});
 };
 
-var m;
+Mover.prototype.update = function() {
+    this.location.add(this.velocity);
+    this.velocity.add(this.acceleration);
+};
 
-function setup(ctx) {
-    m = new Mover(ctx);
-    m.draw();
+Mover.prototype.checkEdges = function(sketch) {
+    var s = sketch;
+
+    if (this.location.x > s.width) {
+      this.location.x = 0;
+    } else if (this.location.x < 0) {
+      this.location.x = s.width;
+    }
+
+    if (this.location.y > s.height) {
+      this.location.y = 0;
+    } else if (this.location.y < 0) {
+      this.location.y = s.height;
+    }
+};
+
+var s, m;
+
+function setup() {
+    m = new Mover();
+    s = s || new Sketch.sketch('canvas', 600, 600);
+    s.background('#ddd');
+    s.onTick = draw;
+    //m.draw(s);
 }
 
-function draw(canvas, ctx) {
-    ctx.clearRect(0, 0, canvas.width(), canvas.height());
-    m.x += 0.3;
-    m.draw();
+function draw(sketch) {
+    sketch.clear();
+    m.location.x += 5;
+    m.checkEdges(sketch);
+    m.draw(sketch);
 }
 
-scene.run();
+document.addEventListener('DOMContentLoaded', function(e) {
+    setup();
+});
+
+if (s) {
+    setup();
+}
