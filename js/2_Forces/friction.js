@@ -1,3 +1,5 @@
+/*global Sketch noise */
+
 function Mover(mass, x, y) {
     this.location = new Sketch.vector2(x, y);
     this.velocity = new Sketch.vector2(0, 0);
@@ -45,11 +47,10 @@ Mover.prototype.checkEdges = function(sketch) {
 var s;
 var ms = [];
 
-function helium(mover) {
-    mover.applyForce(new Sketch.vector2(0, -0.2));
-}
-
 function setup() {
+    var width = 900;
+    var height = 600;
+
     for (var i = 0; i < 20; i++) {
         var mass = 20 * Math.random();
         if (mass < 0.5) mass = 0.5;
@@ -59,6 +60,21 @@ function setup() {
     s = s || new Sketch.sketch('canvas', 900, 600);
     s.background('#ddd');
     s.onTick = draw;
+
+    noise.seed(Math.random());
+}
+
+function noiseMap(w, h) {
+    var n = [];
+
+    for (var i = 0; i < w; i++) {
+        n[i] = [];
+        for (var j = 0; j < h; j++) {
+            n[i][j] = noise.perlin2(i / 100, j / 100);
+        }
+    }
+
+    return n;
 }
 
 function draw(sketch) {
@@ -93,4 +109,4 @@ document.addEventListener('DOMContentLoaded', function(e) {
     setup();
 });
 
-setup();
+//setup();
