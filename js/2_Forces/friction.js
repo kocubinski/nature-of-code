@@ -44,7 +44,7 @@ Mover.prototype.checkEdges = function(sketch) {
     }
 };
 
-var s;
+var s, frictionMap;
 var ms = [];
 
 function setup() {
@@ -57,11 +57,32 @@ function setup() {
         ms.push(new Mover(mass, 30, 30));
     }
 
-    s = s || new Sketch.sketch('canvas', 900, 600);
-    s.background('#ddd');
-    s.onTick = draw;
+    if (s) { s.destroy(); };
+    s = new Sketch.sketch('canvas', 900, 600);
+    //s.background('black');
+    //s.onTick = draw;
 
     noise.seed(Math.random());
+    frictionMap = noiseMap(width, height);
+    drawNoise(frictionMap);
+}
+
+function drawNoise(map) {
+    // var image = s.ctx.createImageData(s.width, s.height);
+    // var data = image.data;
+    // for (var x = 0; x < map.length; x++) {
+    //     var row = map[x];
+    //     for (var y = 0; y < row.length; y++) {
+    //         var value = Math.floor(row[y] * 256);
+    //         var cell = (x + y * map.length) * 4;
+    //         data[cell] = data[cell + 1] = data[cell + 2] = value;
+    //         data[cell + 3] = 255;
+    //     }
+    // }
+
+    // s.ctx.putImageData(image, 0, 0);
+
+
 }
 
 function noiseMap(w, h) {
@@ -105,8 +126,4 @@ function draw(sketch) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function(e) {
-    setup();
-});
-
-//setup();
+setup();

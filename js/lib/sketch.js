@@ -17,7 +17,6 @@ Sketch.sketch = function (pid, w, h) {
     this.height = h;
     this.elem = c;
     this.ctx = c.getContext('2d');
-    this.tick();
     this.mouse = {pressed: 0};
 
     var rect = c.getBoundingClientRect();
@@ -33,6 +32,13 @@ Sketch.sketch = function (pid, w, h) {
         self.mouse.x = e.clientX - rect.left;
         self.mouse.y = e.clientY - rect.top;
     });
+
+    this.destroy = function() {
+        this.destroyed = true;
+        parent.removeChild(c);
+    };
+
+    this.tick();
 };
 
 Sketch.sketch.prototype.onTick = null;
@@ -44,7 +50,9 @@ Sketch.sketch.prototype.tick = function () {
     }
 
     window.requestAnimationFrame(function() {
-        self.tick();
+        if (!self.destroyed) {
+            self.tick();
+        }
     });
 };
 
@@ -61,6 +69,14 @@ Sketch.sketch.prototype.circle = function(radius, location, opts) {
     c.lineWidth = opts.lineWidth || 1;
     c.strokeStyle = opts.lineColor || 'black';
     c.stroke();
+};
+
+Sketch.sketch.prototype.dot = function(r, g, b, a, x, y) {
+    if (!this.imageData) {
+        this.imageData = this.ctx.createImageData(1, 1);
+    }
+    var d = this.imageData.data;
+    this.ctx.putImageData(this.imageData, x, y);
 };
 
 Sketch.sketch.prototype.clear = function() {
