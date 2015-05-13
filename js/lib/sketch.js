@@ -71,6 +71,17 @@ Sketch.sketch.prototype.circle = function(radius, location, opts) {
     c.stroke();
 };
 
+Sketch.sketch.prototype.rectangle = function(x, y, w, h, opts) {
+    var c = this.ctx;
+    c.beginPath();
+    c.rect(x, y, w, h);
+    c.fillStyle = opts.color || 'black';
+    c.fill();
+    c.lineWidth = opts.lineWidth || 1;
+    c.strokeStyle = opts.strokeStyle || 'black';
+    c.stroke();
+};
+
 Sketch.sketch.prototype.dot = function(r, g, b, a, x, y) {
     if (!this.imageData) {
         this.imageData = this.ctx.createImageData(1, 1);
@@ -150,4 +161,10 @@ Sketch.vector2.test = function() {
     var v1 = new Sketch.vector2(2, 3);
     var v2 = new Sketch.vector2(3, 2);
     return Sketch.vector2.add(v1, v2);
+};
+
+Math.constrain = function(n, min, max) {
+    n = n < min ? min : n;
+    n = n > max ? max : n;
+    return n;
 };

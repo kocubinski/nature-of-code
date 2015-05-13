@@ -9,7 +9,7 @@ function Mover(mass, x, y) {
 }
 
 Mover.prototype.draw = function(sketch) {
-    sketch.circle(this.size, this.location, {color: "yellow"});
+    sketch.circle(this.size, this.location, {color: "red"});
 };
 
 Mover.prototype.update = function() {
@@ -44,6 +44,7 @@ Mover.prototype.checkEdges = function(sketch) {
         this.velocity.y *= -bouncyness / 2;
     }
 };
+
 
 var s, frictionMap;
 var ms = [];
