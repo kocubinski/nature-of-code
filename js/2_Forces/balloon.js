@@ -90,4 +90,5 @@ ui.setup();
 function reset() {
     m.location.y = s.height;
     m.location.x = s.width / 2;
+    m.velocity.x = m.velocity.y = 0;
 }
