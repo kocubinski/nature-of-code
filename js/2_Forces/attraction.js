@@ -5,8 +5,8 @@ function Mover(mass, x, y, opts) {
     this.location = new Sketch.vector2(x, y);
     this.velocity = new Sketch.vector2(2, 0);
     this.acceleration = new Sketch.vector2(0, 0);
-    this.mass = 1;
-    this.size = mass * 2;
+    this.mass = mass;
+    this.size = mass;
     this.color = opts.color || "gray";
 }
 
@@ -49,8 +49,7 @@ Mover.prototype.checkEdges = function(sketch) {
 function Attractor(mass, x, y, opts) {
     opts = opts || {};
     this.location = new Sketch.vector2(x, y);
-    this.mass = 20;
-    this.size = mass * 2;
+    this.mass = this.size = mass;
     this.color = opts.color || "gray";
 };
 
@@ -72,26 +71,36 @@ Attractor.prototype.attract = function(m) {
     return f;
 };
 
-var s, m, a;
+var s, a;
+var ms = [];
 
 function setup() {
     if (s) { s.destroy(); };
     s = new Sketch.sketch('canvas', 900, 600);
+    for (var i = 0; i < 20; i++) {
+        var mass = Math.constrain(20 * Math.random(), 3, 10);
+        ms.push(new Mover(mass, s.width * Math.random(), s.height * Math.random()));
+    }
     //m = new Mover(10, s.width / 2 + 60, s.height / 2 + 60);
-    m = new Mover(10, 400, 50);
+    //m = new Mover(20, 400, 50);
+
     a = new Attractor(20, s.width / 2, s.height / 2);
     s.onTick = draw;
 }
+
 function draw(s) {
     s.clear();
-
-    var attraction = a.attract(m);
-    m.applyForce(attraction);
-    m.update();
+    s.ctx.globalAlpha = 0.8;
 
     a.draw(s);
-    m.draw(s);
-}
 
+    for (var i = 0; i < ms.length; i++) {
+        var m = ms[i];
+        var attraction = a.attract(m);
+        m.applyForce(attraction);
+        m.update();
+        m.draw(s);
+    }
+}
 
 setup();

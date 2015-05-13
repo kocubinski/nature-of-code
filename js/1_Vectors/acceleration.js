@@ -10,9 +10,9 @@ Mover.prototype.draw = function(sketch) {
 };
 
 Mover.prototype.update = function() {
+    this.velocity.add(this.acceleration);
     this.velocity.limit(5);
     this.location.add(this.velocity);
-    this.velocity.add(this.acceleration);
 };
 
 Mover.prototype.checkEdges = function(sketch) {
@@ -34,7 +34,7 @@ Mover.prototype.checkEdges = function(sketch) {
 var s, m;
 
 function accelerateToMouse(mover, mouse) {
-    if (!mouse) return;
+    if (!mouse.x) return;
     var a = new Sketch.vector2(mouse.x - m.location.x, mouse.y - m.location.y);
     a.normalize();
     a.mult(0.3);
@@ -43,25 +43,16 @@ function accelerateToMouse(mover, mouse) {
 
 function setup() {
     m = new Mover();
-    s = s || new Sketch.sketch('canvas', 600, 600);
+    s = s || new Sketch.sketch('canvas', 900, 600);
     s.background('#ddd');
     s.onTick = draw;
-    //m.draw(s);
 }
 
 function draw(sketch) {
     sketch.clear();
-    //m.acceleration = new Sketch.vector2(0.1, 0);
     accelerateToMouse(m, sketch.mouse);
+    //console.log(m.location);
     m.checkEdges(sketch);
     m.update();
     m.draw(sketch);
-}
-
-document.addEventListener('DOMContentLoaded', function(e) {
-    setup();
-});
-
-if (s) {
-    setup();
 }
