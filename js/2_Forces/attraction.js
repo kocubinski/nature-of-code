@@ -1,9 +1,9 @@
-/*global Sketch */
+/*global Sketch ui */
 
 function Mover(mass, x, y, opts) {
     opts = opts || {};
     this.location = new Sketch.vector2(x, y);
-    this.velocity = new Sketch.vector2(2, 0);
+    this.velocity = new Sketch.vector2(4, 0);
     this.acceleration = new Sketch.vector2(0, 0);
     this.mass = mass;
     this.size = mass;
@@ -21,29 +21,8 @@ Mover.prototype.update = function() {
 };
 
 Mover.prototype.applyForce = function(force) {
-    var f = Sketch.vector2.div(force, this.mass);
+    var f = Sketch.vector2.div(force, this.mass * params.massFactor);
     this.acceleration.add(f);
-};
-
-Mover.prototype.checkEdges = function(sketch) {
-    var s = sketch;
-    var bouncyness = 0.7;
-
-    if (this.location.x > s.width) {
-        this.location.x = s.width;
-        this.velocity.x *= -bouncyness;
-    } else if (this.location.x < 0) {
-        this.location.x = 0;
-        this.velocity.x *= -bouncyness;
-    }
-
-    if (this.location.y > s.height) {
-        this.location.y = s.height;
-        this.velocity.y *= -bouncyness;
-    } else if (this.location.y < 0) {
-        this.location.y = 0;
-        this.velocity.y *= -bouncyness;
-    }
 };
 
 function Attractor(mass, x, y, opts) {
@@ -58,10 +37,10 @@ Attractor.prototype.draw = function(sketch) {
 };
 
 Attractor.prototype.attract = function(m) {
-    var G = 1;
+    var G = params.G;
     var f = Sketch.vector2.subtract(this.location, m.location);
     var d = f.mag();
-    d = Math.constrain(d, 5, 20);
+    d = Math.constrain(d, 5, 10);
 
     f.normalize();
     var str = (G * this.mass * m.mass) / (d * d);
@@ -143,4 +122,19 @@ function draw(s) {
     }
 }
 
-setup();
+var params = {};
+
+if (ui.live) {
+    ui.bindModelInput(params, 'G', document.getElementById('gravity'));
+    ui.bindModelInput(params, 'massFactor', document.getElementById('mass'));
+    ui.setup();
+} else {
+    params.massFactor = 1;
+    params.G = 1;
+    setup();
+}
+
+function reset() {
+    ms = [];
+    setup();
+}

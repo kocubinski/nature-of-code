@@ -1,17 +1,33 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Acceleration</title>
+    <title>Attraction</title>
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" />
+    <script src="http://localhost:8080/skewer"></script>
     <script src="../lib/sketch.js"></script>
-    <script src="../2_Forces/attraction.js"></script>
+    <script src="../lib/ui.js"></script>
   </head>
   <body>
     <div id="canvas">
     </div>
+    <div class="controls">
+      <button onclick="javascript: reset();">Reset</button>
+      <button onclick="javascript: setup();" class="alert" >More!</button>
+      <div class="slider">
+        <label>Gravity:</label>
+        <input type="range" name="gravity" id="gravity" value="1" min="0.5" max="5"
+                step="0.25"/>
+      </div>
+      <div class="slider">
+        <label>Mass:</label>
+        <input type="range" name="mass" id="mass" value="1" min="0.5" max="10"
+                step="0.25"/>
+      </div>
+      <p>Click and drag to move the attractor!</p>
+    </div>
   </body>
   <script type="text/javascript">
-   document.addEventListener("DOMContentLoaded", function(event) {
-       setup();
-   });
+    ui.live = true;
   </script>
+  <script src="../2_Forces/attraction.js"></script>
 </html>
