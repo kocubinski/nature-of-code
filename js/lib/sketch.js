@@ -27,6 +27,9 @@ Sketch.sketch = function (pid, w, h) {
     });
     c.addEventListener('touchstart', function(e) {
         self.mouse.pressed = 1;
+        var t = e.targetTouches[0];
+        self.mouse.x = t.clientX - rect.left;
+        self.mouse.y = t.clientY - rect.top;
     });
     c.addEventListener('mouseup', function(e) {
         self.mouse.pressed = 0;
@@ -38,10 +41,12 @@ Sketch.sketch = function (pid, w, h) {
         var t = e.targetTouches[0];
         self.mouse.x = t.clientX - rect.left;
         self.mouse.y = t.clientY - rect.top;
+        self.mouse.radius = t.radiusX;
     });
     c.addEventListener('mousemove', function(e) {
         self.mouse.x = e.clientX - rect.left;
         self.mouse.y = e.clientY - rect.top;
+        self.mouse.radius = null;
     });
 
     this.destroy = function() {

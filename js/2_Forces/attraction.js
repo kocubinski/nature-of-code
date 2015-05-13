@@ -52,6 +52,8 @@ Attractor.prototype.attract = function(m) {
 
 Attractor.prototype.isClicked = function(s) {
     var r = this.size / 2;
+    if (s.mouse.radius) r += s.mouse.radius;
+
     if (s.mouse.pressed > 0
         && s.mouse.x >= this.location.x - r
         && s.mouse.x <= this.location.x + r
