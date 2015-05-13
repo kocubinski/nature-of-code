@@ -79,13 +79,14 @@ var ms = [];
 
 
 function setup() {
+    if (s) { s.destroy(); };
+    s = new Sketch.sketch('canvas', 900, 600);
+
     for (var i = 0; i < 20; i++) {
-        var mass = Math.constrain(20 * Math.random(), 2, 20);
+        var mass = Math.constrain(20 * Math.random(), 3, 20);
         ms.push(new Mover(mass, i * (s.width / 20), 0));
     }
 
-    if (s) { s.destroy(); };
-    s = new Sketch.sketch('canvas', 900, 600);
     //s.background('#eee');
     s.onTick = function(s) { draw(s); };
     //s.onTick = draw;
