@@ -9,7 +9,9 @@ function Mover(mass, x, y) {
 }
 
 Mover.prototype.draw = function(sketch) {
-    sketch.circle(this.size, this.location, {color: "cyan"});
+    //sketch.circle(this.size, this.location, {color: "cyan"});
+    sketch.rectangle(this.location.x, this.location.y,
+                     this.size, this.size, {color: "cyan"});
 };
 
 Mover.prototype.update = function() {
@@ -57,13 +59,16 @@ Resistance.prototype.draw = function(sketch) {
     sketch.rectangle(this.x, this.y, this.w, this.h, {color: "#bbb" });
 };
 
-Resistance.prototype.isInside = function(l) {
+Resistance.prototype.isInside = function(l, a) {
     return l.x >= this.x && l.y >= this.y;
 };
 
 Resistance.prototype.drag = function(m) {
     var speed = m.velocity.mag();
-    var dragMagnitude = this.c * speed * speed;
+    var a = m.size / 10;
+    a = 1;
+    var dragMagnitude = this.c * speed * speed * a;
+    console.log(dragMagnitude);
     var drag = m.velocity.get();
     drag.mult(-1);
     drag.normalize();
@@ -83,7 +88,7 @@ function setup() {
     s = new Sketch.sketch('canvas', 900, 600);
 
     for (var i = 0; i < 20; i++) {
-        var mass = Math.constrain(20 * Math.random(), 3, 20);
+        var mass = Math.constrain(20 * Math.random(), 3, 40);
         ms.push(new Mover(mass, i * (s.width / 20), 0));
     }
 

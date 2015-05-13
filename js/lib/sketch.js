@@ -117,6 +117,15 @@ Sketch.vector2.prototype.add = function(v) {
     this.y += v.y;
 };
 
+Sketch.vector2.subtract = function(v1, v2) {
+    return new Sketch.vector2(v1.x - v2.x, v1.y - v2.y);
+};
+
+Sketch.vector2.prototype.subtract = function(v) {
+    this.x -= v.x;
+    this.y -= v.y;
+};
+
 Sketch.vector2.prototype.mag = function() {
     return Math.sqrt(this.x * this.x + this.y * this.y);
 };
