@@ -82,7 +82,10 @@ var params = {};
 if (ui.live) {
     ui.bindModelInput(params, 'bouncyness', document.getElementById('bouncyness'));
     ui.bindModelInput(params, 'helium', document.getElementById('helium'));
-}
+} else {
+    params.bouncyness = 0.5;
+    params.helium = 0.2;
+};
 
 ui.setup();
 

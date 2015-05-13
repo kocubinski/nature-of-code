@@ -71,18 +71,52 @@ Attractor.prototype.attract = function(m) {
     return f;
 };
 
+Attractor.prototype.isClicked = function(s) {
+    var r = this.size / 2;
+    if (s.mouse.pressed > 0
+        && s.mouse.x >= this.location.x - r
+        && s.mouse.x <= this.location.x + r
+        && s.mouse.y >= this.location.y - r
+        && s.mouse.y <= this.location.y + r) {
+        return true;
+    }
+
+    return false;
+};
+
+Attractor.prototype.beginDrag = function(s) {
+    this.color = '#333';
+    this.dragging = true;
+};
+
+Attractor.prototype.stopDrag = function(s) {
+    this.dragging = false;
+    this.color = 'gray';
+};
+
+Attractor.prototype.drag = function(s) {
+    if (s.mouse.pressed === 0 ) {
+        this.stopDrag();
+        return;
+    }
+
+    this.location.x = s.mouse.x;
+    this.location.y = s.mouse.y;
+};
+
 var s, a;
 var ms = [];
 
 function setup() {
     if (s) { s.destroy(); };
     s = new Sketch.sketch('canvas', 900, 600);
+
+    s.background('#ddd');
+
     for (var i = 0; i < 20; i++) {
         var mass = Math.constrain(20 * Math.random(), 3, 10);
         ms.push(new Mover(mass, s.width * Math.random(), s.height * Math.random()));
     }
-    //m = new Mover(10, s.width / 2 + 60, s.height / 2 + 60);
-    //m = new Mover(20, 400, 50);
 
     a = new Attractor(20, s.width / 2, s.height / 2);
     s.onTick = draw;
@@ -91,6 +125,12 @@ function setup() {
 function draw(s) {
     s.clear();
     s.ctx.globalAlpha = 0.8;
+
+    if (a.dragging) {
+        a.drag(s);
+    } else if (a.isClicked(s)) {
+        a.beginDrag();
+    }
 
     a.draw(s);
 

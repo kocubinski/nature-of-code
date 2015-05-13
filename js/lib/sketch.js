@@ -22,11 +22,22 @@ Sketch.sketch = function (pid, w, h) {
     var rect = c.getBoundingClientRect();
     var self = this;
 
+    c.addEventListener('mousedown', function(e) {
+        self.mouse.pressed = 1;
+    });
+    c.addEventListener('touchstart', function(e) {
+        self.mouse.pressed = 1;
+    });
     c.addEventListener('mouseup', function(e) {
         self.mouse.pressed = 0;
     });
-    c.addEventListener('mousedown', function(e) {
-        self.mouse.pressed = 1;
+    c.addEventListener('touchend', function(e) {
+        self.mouse.pressed = 0;
+    });
+    c.addEventListener('touchmove', function(e) {
+        var t = e.targetTouches[0];
+        self.mouse.x = t.clientX - rect.left;
+        self.mouse.y = t.clientY - rect.top;
     });
     c.addEventListener('mousemove', function(e) {
         self.mouse.x = e.clientX - rect.left;
