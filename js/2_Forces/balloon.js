@@ -1,3 +1,5 @@
+/*global Sketch ui */
+
 function Mover(x, y) {
     this.location = new Sketch.vector2(x, y);
     this.velocity = new Sketch.vector2(0, 0);
@@ -6,12 +8,12 @@ function Mover(x, y) {
 }
 
 Mover.prototype.draw = function(sketch) {
-    sketch.circle(this.size, this.location, {color: "green"});
+    sketch.circle(this.size, this.location, {color: "red"});
 };
 
 Mover.prototype.update = function() {
-    this.location.add(this.velocity);
     this.velocity.add(this.acceleration);
+    this.location.add(this.velocity);
     this.acceleration.mult(0);
 };
 
@@ -21,7 +23,7 @@ Mover.prototype.applyForce = function(f) {
 
 Mover.prototype.checkEdges = function(sketch) {
     var s = sketch;
-    var bouncyness = 0.7;
+    var bouncyness = params.bouncyness;
 
     if (this.location.x > s.width) {
         this.location.x = s.width;
@@ -51,7 +53,7 @@ function accelerateToMouse(mover, mouse) {
 }
 
 function helium(mover) {
-    mover.applyForce(new Sketch.vector2(0, -0.2));
+    mover.applyForce(new Sketch.vector2(0, -params.helium));
 }
 
 function setup() {
@@ -66,7 +68,6 @@ function draw(sketch) {
     sketch.clear();
 
     var wind = new Sketch.vector2(0.5, 0);
-    console.log(sketch.mouse);
     if (sketch.mouse && sketch.mouse.pressed > 0) {
         m.applyForce(wind);
     }
@@ -76,10 +77,17 @@ function draw(sketch) {
     m.draw(sketch);
 }
 
-document.addEventListener('DOMContentLoaded', function(e) {
-    setup();
-});
+var params = {};
 
-if (s) {
-    setup();
+if (ui.live) {
+    ui.bindModelInput(params, 'bouncyness', document.getElementById('bouncyness'));
+    ui.bindModelInput(params, 'helium', document.getElementById('helium'));
+}
+
+ui.setup();
+
+
+function reset() {
+    m.location.y = s.height;
+    m.location.x = s.width / 2;
 }
