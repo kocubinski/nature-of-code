@@ -116,12 +116,23 @@ function scatter(s) {
     }
 }
 
-function reset() {
+function random() {
     scatter(s);
     tick();
 }
 
+function reset() {
+    defaults();
+    setup();
+}
+
 var params = {};
+
+function defaults() {
+    params.damp = 0.00002;
+    params.accel = 8000.0;
+    params.blue = params.green = params.red = 0;
+}
 
 if (ui.live) {
     ui.bindModelInput(params, 'damp', document.getElementById('damp'));
@@ -132,8 +143,6 @@ if (ui.live) {
     ui.setup();
 } else {
     // good defaults
-    params.damp = 0.00002;
-    params.accel = 8000.0;
-    params.blue = params.green = params.red = 0;
+    defaults();
     setup();
 }
