@@ -11,8 +11,10 @@
     <div id="canvas">
     </div>
     <div class="controls">
-      <button onclick="javascript: reset();">Reset</button>
-      <button onclick="javascript: setup();" class="alert" >More!</button>
+      <button onclick="javascript: reset();" class="btn-default">Reset</button>
+      <button onclick="javascript: setup();" class="btn btn-alert" >More!</button>
+      <button onclick="javascript: addAttractor();" class="btn btn-secondary" >Attractor!</button>
+      <button onclick="javascript: setDrawMode(!DRAW_MODE);" class="btn btn-secondary" >Draw!</button>
       <div class="slider">
         <label>Gravity:</label>
         <input type="range" name="gravity" id="gravity" value="1" min="0.5" max="5"

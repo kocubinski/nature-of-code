@@ -1,4 +1,4 @@
-/*global Sketch */
+/*global Sketch ui */
 
 function Attractor(x, y) {
     this.x = x;
@@ -11,14 +11,6 @@ Attractor.fromSketch = function (s) {
     return new Attractor(x, y);
 };
 
-// a point in space with a velocity
-// moves according to acceleration and damping parameters
-// in this case, it moves very fast so the process is basically "scattering"
-
-// changing these parameters can give very different results
-var damp = 0.00002; // remember a very small amount of the last direction
-var accel = 4000.0; // move very quickly
-
 
 function Particle(s) {
     // initialise with random velocity:
@@ -26,8 +18,8 @@ function Particle(s) {
     this.y = Math.random() * s.height;
 
     // initialise with random velocity:
-    this.vx = Math.randomRange(-accel/2,accel/2);
-    this.vy = Math.randomRange(-accel/2,accel/2);
+    this.vx = Math.randomRange(-params.accel/2,params.accel/2);
+    this.vy = Math.randomRange(-params.accel/2,params.accel/2);
 }
 
 Particle.prototype.step = function() {
@@ -45,8 +37,8 @@ Particle.prototype.step = function() {
 
         if (d2 > 0.1) { // make sure we don't divide by zero
             // accelerate towards each attractor
-            this.vx += accel * (attractor[i].x-this.x) / d2;
-            this.vy += accel * (attractor[i].y-this.y) / d2;
+            this.vx += params.accel * (attractor[i].x-this.x) / d2;
+            this.vy += params.accel * (attractor[i].y-this.y) / d2;
         }
     }
 
@@ -55,11 +47,11 @@ Particle.prototype.step = function() {
     this.y += this.vy;
 
     // scale the velocity back for the next frame
-    this.vx *= damp;
-    this.vy *= damp;
+    this.vx *= params.damp;
+    this.vy *= params.damp;
 };
 
-var NUM_PARTICLES  = 100;
+var NUM_PARTICLES  = 500;
 var NUM_ATTRACTORS = 6;
 
 var particle = [];
@@ -98,10 +90,10 @@ function tick() {
                 p.step();
                 var color = 0;
                 data[Math.round(p.y) * s.width + Math.round(p.x)] =
-                    (200   << 24) |  // alpha
-                    (color << 16) |   // blue
-                    (color <<  8) |   // green
-                    color;            // red
+                    (100   << 24) |  // alpha
+                    (params.blue << 16) |   // blue
+                    (params.green <<  8) |   // green
+                    params.red;            // red
             }
 
             imageData.data.set(buf8);
@@ -116,8 +108,6 @@ function scatter(s) {
     // randomise attractors
     for (var i = 0; i < NUM_ATTRACTORS; i++) {
         attractor[i] = Attractor.fromSketch(s);
-        // so you *can* get your favourite one back, if you want!
-        //println("attractor["+i+"] = new Attractor("+attractor[i].x+","+attractor[i].y+");");
     }
 
     // randomise particles
@@ -131,4 +121,19 @@ function reset() {
     tick();
 }
 
-setup();
+var params = {};
+
+if (ui.live) {
+    ui.bindModelInput(params, 'damp', document.getElementById('damp'));
+    ui.bindModelInput(params, 'accel', document.getElementById('accel'));
+    ui.bindModelInput(params, 'red', document.getElementById('red'));
+    ui.bindModelInput(params, 'green', document.getElementById('green'));
+    ui.bindModelInput(params, 'blue', document.getElementById('blue'));
+    ui.setup();
+} else {
+    // good defaults
+    params.damp = 0.00002;
+    params.accel = 8000.0;
+    params.blue = params.green = params.red = 0;
+    setup();
+}

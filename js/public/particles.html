@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Particle Drawing</title>
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" />
+    <script src="http://localhost:8080/skewer"></script>
+    <script src="../lib/sketch.js"></script>
+    <script src="../lib/ui.js"></script>
+  </head>
+  <body>
+    <div id="canvas">
+    </div>
+    <div class="controls">
+      <button onclick="javascript: reset();" class="btn-default">Random</button>
+      <div class="slider">
+        <label>Acceleration:</label>
+        <input type="range" name="accel" id="accel" value="8000" min="4000" max="16000"
+                step="100"/>
+      </div>
+      <div class="slider">
+        <label>Dampening:</label>
+        <input type="range" name="damp" id="damp" value="0.00002" min="0.00002" max="0.1"
+                step="0.001"/>
+      </div>
+      <div class="slider">
+        <label>Red:</label>
+        <input type="range" name="red" id="red" value="0" min="0" max="255"
+                step="1"/>
+      </div>
+      <div class="slider">
+        <label>Green:</label>
+        <input type="range" name="green" id="green" value="0" min="0" max="255"
+                step="1"/>
+      </div>
+      <div class="slider">
+        <label>Blue:</label>
+        <input type="range" name="blue" id="blue" value="0" min="0" max="255"
+                step="1"/>
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript">
+    ui.live = true;
+  </script>
+  <script src="../2_Forces/particles.js"></script>
+</html>

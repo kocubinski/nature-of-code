@@ -14,7 +14,6 @@ body {
     height: 25px;
     margin: 2px 0;
     vertical-align: middle;
-    background: #999;
     border-radius: 4px;
     text-shadow: 1px 1px 2px #000;
     border: none;
@@ -24,12 +23,27 @@ body {
                 0px 0px 0px 3px rgba(0, 0, 0, 0.1) inset;
 }
 
-button.alert {
-    background: rgb(202, 60, 60);
+.controls input {
+    background: #999;
+}
+
+.btn {
     color: white;
     border-radius: 4px;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
     color: white;
+}
+
+.btn-default {
+    background: #999;
+}
+
+.btn-alert{
+    background: rgb(202, 60, 60);
+}
+
+.btn-secondary{
+    background: rgb(66, 184, 221);
 }
 
 .controls button:hover {

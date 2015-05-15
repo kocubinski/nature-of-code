@@ -85,10 +85,13 @@ Attractor.prototype.drag = function(s) {
     this.location.y = s.mouse.y;
 };
 
-var s, a;
+var DRAW_MODE = false;
+var s;
 var ms = [];
+var as = [];
 
 function setup() {
+    DRAW_MODE = false;
     if (s) { s.destroy(); };
     s = new Sketch.sketch('canvas', 900, 600);
 
@@ -99,29 +102,92 @@ function setup() {
         ms.push(new Mover(mass, s.width * Math.random(), s.height * Math.random()));
     }
 
-    a = new Attractor(20, s.width / 2, s.height / 2);
+    as[0] = new Attractor(20, s.width / 2, s.height / 2);
     s.onTick = draw;
 }
 
+function addAttractor() {
+    as.push(new Attractor(20, Math.randomRange(0, s.width), Math.randomRange(0, s.height)));
+}
+
 function draw(s) {
+    var a;
+
     s.clear();
     s.ctx.globalAlpha = 0.8;
 
-    if (a.dragging) {
-        a.drag(s);
-    } else if (a.isClicked(s)) {
-        a.beginDrag();
+    for (var i = 0; i < as.length; i++) {
+        a = as[i];
+        if (a.dragging) {
+            a.drag(s);
+        } else if (a.isClicked(s)) {
+            a.beginDrag();
+        }
     }
 
-    a.draw(s);
-
-    for (var i = 0; i < ms.length; i++) {
+    for (i = 0; i < ms.length; i++) {
         var m = ms[i];
-        var attraction = a.attract(m);
-        m.applyForce(attraction);
+        for (var j = 0; j < as.length; j++) {
+            a = as[j];
+            a.draw(s);
+            var attraction = a.attract(m);
+            m.applyForce(attraction);
+        }
         m.update();
         m.draw(s);
     }
+}
+
+function drawTick() {
+    var imageData = s.ctx.getImageData(0, 0, s.width, s.height);
+    var buf = new ArrayBuffer(imageData.data.length);
+    var buf8 = new Uint8ClampedArray(buf);
+    var data = new Uint32Array(buf);
+
+    s.onTick =
+        function (s) {
+
+            for (var i = 0; i < ms.length; i++) {
+                var p = ms[i];
+
+                for (var j = 0; j < as.length; j++) {
+                    var a = as[j];
+                    var attraction = a.attract(p);
+                    p.applyForce(attraction);
+                }
+
+                p.update();
+
+                var color = 0;
+                data[Math.round(p.location.y) * s.width + Math.round(p.location.x)] =
+                    (200   << 24) |  // alpha
+                    (color << 16) |   // blue
+                    (color <<  8) |   // green
+                    color;            // red
+            }
+
+            imageData.data.set(buf8);
+            s.ctx.putImageData(imageData, 0, 0);
+        };
+}
+
+function setDrawMode(mode) {
+    if (mode && !DRAW_MODE) {
+        s.clear();
+        s.background('#fff');
+        drawTick();
+    } else if (!mode && DRAW_MODE) {
+        s.clear();
+        s.background('#ddd');
+        s.onTick = draw;
+    }
+    DRAW_MODE = mode;
+}
+
+function reset() {
+    ms = [];
+    as = [];
+    setup();
 }
 
 var params = {};
@@ -133,10 +199,5 @@ if (ui.live) {
 } else {
     params.massFactor = 1;
     params.G = 1;
-    setup();
-}
-
-function reset() {
-    ms = [];
     setup();
 }
