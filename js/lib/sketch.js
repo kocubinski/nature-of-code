@@ -88,6 +88,7 @@ Sketch.sketch.prototype.circle = function(radius, location, opts) {
 };
 
 Sketch.sketch.prototype.rectangle = function(x, y, w, h, opts) {
+    opts = opts || {};
     var c = this.ctx;
     c.beginPath();
     c.rect(x, y, w, h);
@@ -188,8 +189,14 @@ Sketch.vector2.test = function() {
     return Sketch.vector2.add(v1, v2);
 };
 
+// extending math
+
 Math.constrain = function(n, min, max) {
     n = n < min ? min : n;
     n = n > max ? max : n;
     return n;
+};
+
+Math.randomRange = function(min, max) {
+    return Math.random() * (max - min) + min;
 };
