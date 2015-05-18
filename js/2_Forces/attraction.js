@@ -16,6 +16,7 @@ Mover.prototype.draw = function(sketch) {
 
 Mover.prototype.update = function() {
     this.velocity.add(this.acceleration);
+    this.velocity.limit(10);
     this.location.add(this.velocity);
     this.acceleration.mult(0);
 };
