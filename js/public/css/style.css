@@ -70,4 +70,5 @@ body {
 
 #canvas {
     margin-bottom: 20px;
+    cursor: default;
 }

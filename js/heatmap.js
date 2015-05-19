@@ -1,5 +1,4 @@
 /*global Sketch */
-
 var Color = Color ||
         function(r, g, b) {
             this.r = r;
@@ -9,9 +8,12 @@ var Color = Color ||
 
 Color.lerp = function(c1, c2, amt) {
     amt = Math.constrain(amt, 0, 1);
-    return new Color((c2.r - c1.r) * amt,
-                     (c2.g - c1.g) * amt,
-                     (c2.b - c1.b) * amt);
+    var lerp = function(a, b, u) {
+        return (1 - u) * a + u * b;
+    };
+    return new Color(lerp(c1.r, c2.r, amt),
+                     lerp(c1.g, c2.g, amt),
+                     lerp(c1.b, c2.b, amt));
 };
 
 Color.gradient = function() {
@@ -36,10 +38,12 @@ Color.gradient.prototype.get = function(val) {
     var i = Math.floor(val);
     var c1 = cs[i];
     var c2 = cs[i + 1];
+    var amt = val - i;
+    //console.log(val, i, amt);
     return Color.lerp(c1, c2, val - i);
 };
 
-var size = 300;
+var size = 400;
 var heatmap = [];
 var index = 0;
 var s, g;
@@ -60,6 +64,12 @@ function setup() {
     g.add(255, 153, 102);
     g.add(204, 51, 0);
     g.add(153, 0, 0);
+
+    // g.colors.forEach(function (c, i) {
+    //     var height = s.height / g.colors.length;
+    //     s.rectangle(0, i * height, s.width, height,
+    //                 {color: 'rgb(' + c.r + ',' + c.g + ',' + c.b + ')'});
+    // });
 
     // double buffering
     heatmap[0] = [];
@@ -88,9 +98,12 @@ function tick() {
     s.onTick =
         function (s) {
 
-            if (s.mouse.pressed > 0) {
+            if (s.mouse.pressed == 1) {
                 applyHeat(s.mouse.x, s.mouse.y, 16, 0.5);
+            } else if (s.mouse.pressed == 2) {
+                applyHeat(s.mouse.x, s.mouse.y, 16, -0.5);
             }
+
 
             updateHeatmap();
 
@@ -125,8 +138,6 @@ function calcPixel(i, j) {
     var total = 0.0;
     var count = 0;
 
-    // This is were the magic happens...
-    // Average the heat around the current pixel to determin the new value
     for(var ii = -1; ii < 2; ii++) {
         for(var jj = -1; jj < 2; jj++) {
             if(i + ii < 0 || i + ii >= s.width || j + jj < 0 || j + jj >= s.height)
@@ -154,8 +165,6 @@ function applyHeat(i, j, r, delta) {
             var x = i + ii;
             var y = j + jj;
             var h = heatmap[index];
-            console.log(h);
-            console.log(h.length.get(0));
             heatmap[index][i + ii][j + jj] += delta;
             heatmap[index][i + ii][j + jj] = Math.constrain(heatmap[index][i + ii][j + jj], 0.0, 20.0);
         }

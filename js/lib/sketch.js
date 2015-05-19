@@ -22,8 +22,17 @@ Sketch.sketch = function (pid, w, h) {
     var rect = c.getBoundingClientRect();
     var self = this;
 
+    var isRightClick = function(e) {
+        var isRight;
+        if ("which" in e)
+            isRight = e.which == 3;
+        else if ("button" in e)
+            isRight = e.button == 2;
+        return isRight;
+    };
     c.addEventListener('mousedown', function(e) {
-        self.mouse.pressed = 1;
+        var isRight = isRightClick(e);
+        self.mouse.pressed = isRight ? 2 : 1;
     });
     c.addEventListener('touchstart', function(e) {
         self.mouse.pressed = 1;
@@ -32,7 +41,9 @@ Sketch.sketch = function (pid, w, h) {
         self.mouse.y = t.clientY - rect.top;
     });
     c.addEventListener('mouseup', function(e) {
+        var isRight = isRightClick(e);
         self.mouse.pressed = 0;
+        if (isRight) e.preventDefault();
     });
     c.addEventListener('touchend', function(e) {
         self.mouse.pressed = 0;
@@ -200,3 +211,6 @@ Math.constrain = function(n, min, max) {
 Math.randomRange = function(min, max) {
     return Math.random() * (max - min) + min;
 };
+
+
+// extending Array
