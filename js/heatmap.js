@@ -1,4 +1,4 @@
-/*global Sketch */
+/*global Sketch Touch */
 var Color = Color ||
         function(r, g, b) {
             this.r = r;
@@ -43,7 +43,7 @@ Color.gradient.prototype.get = function(val) {
     return Color.lerp(c1, c2, val - i);
 };
 
-var size = 400;
+var size = window.isMobile()? 300 : 400;
 var heatmap = [];
 var index = 0;
 var s, g;
@@ -93,10 +93,12 @@ function tick() {
     var imageData = s.ctx.getImageData(0, 0, s.width, s.height),
         buf = new ArrayBuffer(imageData.data.length),
         buf8 = new Uint8ClampedArray(buf),
-        data = new Uint32Array(buf);
+        data = new Uint32Array(buf),
+        touch = new Touch(s.ctx.elem);
 
     s.onTick =
         function (s) {
+
 
             if (s.mouse.pressed > 0) {
                 var x = Math.round(s.mouse.x),
@@ -104,7 +106,12 @@ function tick() {
                     r = s.mouse.radius ? Math.round(s.mouse.radius) : 16,
                     r = r % 2 == 0 ? r : r + 1,
                     d = s.mouse.pressed == 1 ? 0.5 : -0.5;
-                console.log(x, y);
+                if (s.mouse.isTouch) {
+                    r *= 8;
+                    d *= 4;
+                }
+                //console.log(x, y, r);
+                // console.log(s.mouse);
                 applyHeat(x, y, r, d);
             }
 

@@ -1,3 +1,4 @@
+/*global Touch */
 var Sketch = Sketch || {};
 
 /* Canvas */
@@ -30,34 +31,40 @@ Sketch.sketch = function (pid, w, h) {
             isRight = e.button == 2;
         return isRight;
     };
+
     c.addEventListener('mousedown', function(e) {
         var isRight = isRightClick(e);
         self.mouse.pressed = isRight ? 2 : 1;
-    });
-    c.addEventListener('touchstart', function(e) {
-        self.mouse.pressed = 1;
-        var t = e.targetTouches[0];
-        self.mouse.x = t.clientX - rect.left;
-        self.mouse.y = t.clientY - rect.top;
     });
     c.addEventListener('mouseup', function(e) {
         var isRight = isRightClick(e);
         self.mouse.pressed = 0;
         if (isRight) e.preventDefault();
     });
-    c.addEventListener('touchend', function(e) {
-        self.mouse.pressed = 0;
-    });
-    c.addEventListener('touchmove', function(e) {
-        var t = e.targetTouches[0];
-        self.mouse.x = t.clientX - rect.left;
-        self.mouse.y = t.clientY - rect.top;
-        self.mouse.radius = t.radiusX;
-    });
     c.addEventListener('mousemove', function(e) {
         self.mouse.x = e.clientX - rect.left;
         self.mouse.y = e.clientY - rect.top;
         self.mouse.radius = null;
+    });
+
+    var t = new Touch(this.elem, this.mouse);
+    t.addEventListener('onTouchStart', function(e) {
+        var d = e.detail;
+        self.mouse.isTouch = true;
+        self.mouse.x = d.x - rect.left;
+        self.mouse.y = d.y - rect.top;
+        self.mouse.radius = d.r;
+        self.mouse.pressed = 1;
+    });
+    t.addEventListener('onTouchMove', function(e) {
+        var d = e.detail;
+        self.mouse.x = d.x - rect.left;
+        self.mouse.y = d.y - rect.top;
+        self.mouse.radius = d.r;
+    });
+    t.addEventListener('onTouchEnd', function() {
+        self.mouse.pressed = 0;
+        self.mouse.isTouch = false;
     });
 
     this.destroy = function() {
@@ -212,5 +219,6 @@ Math.randomRange = function(min, max) {
     return Math.random() * (max - min) + min;
 };
 
-
-// extending Array
+window.isMobile = function() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
