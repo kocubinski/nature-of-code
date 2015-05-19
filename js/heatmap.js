@@ -90,26 +90,29 @@ function draw(s) {
 }
 
 function tick() {
-    var imageData = s.ctx.getImageData(0, 0, s.width, s.height);
-    var buf = new ArrayBuffer(imageData.data.length);
-    var buf8 = new Uint8ClampedArray(buf);
-    var data = new Uint32Array(buf);
+    var imageData = s.ctx.getImageData(0, 0, s.width, s.height),
+        buf = new ArrayBuffer(imageData.data.length),
+        buf8 = new Uint8ClampedArray(buf),
+        data = new Uint32Array(buf);
 
     s.onTick =
         function (s) {
 
-            if (s.mouse.pressed == 1) {
-                applyHeat(s.mouse.x, s.mouse.y, 16, 0.5);
-            } else if (s.mouse.pressed == 2) {
-                applyHeat(s.mouse.x, s.mouse.y, 16, -0.5);
+            if (s.mouse.pressed > 0) {
+                var x = Math.round(s.mouse.x),
+                    y = Math.round(s.mouse.y),
+                    r = s.mouse.radius ? Math.round(s.mouse.radius) : 16,
+                    r = r % 2 == 0 ? r : r + 1,
+                    d = s.mouse.pressed == 1 ? 0.5 : -0.5;
+                console.log(x, y);
+                applyHeat(x, y, r, d);
             }
-
 
             updateHeatmap();
 
-            for (var x = 0; x < size; x++) {
+            for (x = 0; x < size; x++) {
                 var row = heatmap[index][x];
-                for (var y = 0; y < size; y++) {
+                for (y = 0; y < size; y++) {
                     var color = g.get(heatmap[index][x][y]);
                     data[y * s.width + x] =
                         (255     << 24) |  // alpha
