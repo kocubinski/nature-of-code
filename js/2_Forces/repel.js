@@ -28,7 +28,7 @@ Mover.prototype.attract = function(m) {
     f.normalize();
 
     var str = (params.G * this.mass * m.mass) / (d * d);
-    f.mult(-str);
+    f.mult(params.repel ? -str : str);
     return f;
 };
 
@@ -60,25 +60,29 @@ Mover.prototype.checkEdges = function(sketch) {
 
 var s;
 var ms = [];
+var cs = [];
+var rainbow = Color.gradient.rainbow10;
 
 function setup() {
     if (s) { s.destroy(); };
     s = new Sketch.sketch('canvas', 900, 600);
 
-    s.background('#ddd');
+    //s.background('#ddd');
 
     for (var i = 0; i < 20; i++) {
         var mass = Math.constrain(20 * Math.random(), 3, 20);
-        ms.push(new Mover(mass, s.width * Math.random(), s.height * Math.random()));
+        cs.push(new Color());
+        ms.push(new Mover(mass, s.width * Math.random(), s.height * Math.random(),
+                          {color: rainbow.random().toRgb()}));
     }
 
     s.onTick = draw;
 }
 
-
 function draw(s) {
-    s.clear();
-    s.ctx.globalAlpha = 0.6;
+    s.clear('rgba(0, 0, 0, 0.3)');
+    //s.clear();
+    s.ctx.globalAlpha = 0.9;
 
     var len = ms.length;
     for(var i = 0; i < len; i++) {
@@ -87,6 +91,9 @@ function draw(s) {
             var f = ms[j].attract(ms[i]);
             ms[i].applyForce(f);
         }
+        cs[i].tween(rainbow, 0.02);
+        //console.log(color);
+        ms[i].color = cs[i].toRgb();
         ms[i].update();
         ms[i].checkEdges(s);
         ms[i].draw(s);
@@ -109,4 +116,15 @@ if (ui.live) {
     params.G = 0.3;
     params.repel = false;
     setup();
+}
+
+function toggleRepulsion() {
+    var btn = document.getElementById("btn-repel");
+    if (params.repel) {
+        params.repel = false;
+        btn.innerText = "Attract!";
+    } else {
+        params.repel = true;
+        btn.innerText = "Repel!";
+    }
 }

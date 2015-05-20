@@ -1,49 +1,6 @@
 /*global Sketch Touch */
-var Color = Color ||
-        function(r, g, b) {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-        };
 
-Color.lerp = function(c1, c2, amt) {
-    amt = Math.constrain(amt, 0, 1);
-    var lerp = function(a, b, u) {
-        return (1 - u) * a + u * b;
-    };
-    return new Color(lerp(c1.r, c2.r, amt),
-                     lerp(c1.g, c2.g, amt),
-                     lerp(c1.b, c2.b, amt));
-};
-
-Color.gradient = function() {
-    this.colors = [];
-};
-
-Color.gradient.prototype.add = function(r, g, b) {
-    this.colors.push(new Color(r, g, b));
-};
-
-Color.gradient.prototype.get = function(val) {
-    var cs = this.colors;
-    if (cs.length == 0)
-        return new Color(0, 0, 0);
-
-    if (val <= 0.0)
-        return cs[0];
-
-    if (val >= cs.length - 1)
-        return cs[cs.length - 1];
-
-    var i = Math.floor(val);
-    var c1 = cs[i];
-    var c2 = cs[i + 1];
-    var amt = val - i;
-    //console.log(val, i, amt);
-    return Color.lerp(c1, c2, val - i);
-};
-
-var size = window.isMobile()? 300 : 400;
+var size = window.isMobile() ? 300 : 400;
 var heatmap = [];
 var index = 0;
 var s, g;

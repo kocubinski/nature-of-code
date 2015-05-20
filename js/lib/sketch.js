@@ -12,8 +12,8 @@ Sketch.sketch = function (pid, w, h) {
     c.style.marginRight = 'auto';
     c.style.marginLeft = 'auto';
     var parent = document.getElementById(pid);
-    parent.appendChild(c);
 
+    parent.appendChild(c);
     this.width = w;
     this.height = h;
     this.elem = c;
@@ -98,11 +98,14 @@ Sketch.sketch.prototype.circle = function(radius, location, opts) {
     var c = this.ctx;
     c.beginPath();
     c.arc(location.x, location.y, radius, 2 * Math.PI, false);
+    //console.log(opts.color);
     c.fillStyle = opts.color || 'black';
     c.fill();
-    c.lineWidth = opts.lineWidth || 1;
-    c.strokeStyle = opts.lineColor || 'black';
-    c.stroke();
+    if (opts.lineColor) {
+        c.lineWidth = opts.lineWidth || 1;
+        c.strokeStyle = 'black';
+        c.stroke();
+    }
 };
 
 Sketch.sketch.prototype.rectangle = function(x, y, w, h, opts) {
@@ -125,8 +128,13 @@ Sketch.sketch.prototype.dot = function(r, g, b, a, x, y) {
     this.ctx.putImageData(this.imageData, x, y);
 };
 
-Sketch.sketch.prototype.clear = function() {
-    this.ctx.clearRect(0, 0, this.elem.width, this.elem.height);
+Sketch.sketch.prototype.clear = function(rgba) {
+    if (!rgba) {
+        this.ctx.clearRect(0, 0, this.elem.width, this.elem.height);
+    } else {
+        this.ctx.fillStyle = rgba;
+        this.ctx.fillRect(0, 0, this.elem.width, this.elem.height);
+    }
 };
 
 Sketch.sketch.test = function() {
@@ -222,3 +230,121 @@ Math.randomRange = function(min, max) {
 window.isMobile = function() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 };
+
+/* Color */
+var Color = Color ||
+        function(r, g, b) {
+            this.r = r || 0;
+            this.g = g || 0;
+            this.b = b || 0;
+        };
+
+Color.prototype = {
+
+    // here we have a static member variable -- hm.
+    // (function() {
+    //var _tween;
+    // return {
+
+    _tween: null,
+
+    toRgb: function() {
+        return 'rgb(' + this.r + ',' + this.g + ',' + this.b + ')';
+    },
+
+    set: function(c) {
+        this.r = c.r;
+        this.g = c.g;
+        this.b = c.b;
+        this.round();
+    },
+
+    tween: function(gradient, easing) {
+        var len = gradient.colors.length;
+        if (this._tween === null) {
+            this._tween = Math.randomRange(0, len - 1);
+            console.log(this._tween);
+            this.set(gradient.get(this._tween));
+        }
+        this._tween += easing;
+        if (this._tween > len) {
+            this._tween = 0;
+        }
+        this.set(gradient.get(this._tween));
+    },
+
+    round: function() {
+        this.r = Math.round(this.r);
+        this.g = Math.round(this.g);
+        this.b = Math.round(this.b);
+    }
+};
+
+
+Color.lerp = function(c1, c2, amt) {
+    amt = Math.constrain(amt, 0, 1);
+    var lerp = function(a, b, u) {
+        return (1 - u) * a + u * b;
+    };
+    return new Color(lerp(c1.r, c2.r, amt),
+                     lerp(c1.g, c2.g, amt),
+                     lerp(c1.b, c2.b, amt));
+};
+
+Color.gradient = function() {
+    this.colors = [];
+};
+
+Color.gradient.prototype = {
+
+    add: function(r, g, b) {
+        this.colors.push(new Color(r, g, b));
+    },
+
+    get: function(val) {
+        var cs = this.colors;
+        if (cs.length == 0)
+            return new Color(0, 0, 0);
+
+        if (val <= 0.0)
+            return cs[0];
+
+        if (val >= cs.length - 1)
+            return cs[cs.length - 1];
+
+        var i = Math.floor(val);
+        var c1 = cs[i];
+        var c2 = cs[i + 1];
+        var amt = val - i;
+        return Color.lerp(c1, c2, val - i);
+    },
+
+    random: function() {
+        var ci = Math.round(Math.randomRange(0, this.colors.length - 1));
+        return this.colors[ci];
+    }
+
+};
+
+Color.gradient.rainbow11 = new function() {
+    var g = new Color.gradient();
+    g.add(0, 0, 0);
+    g.add(102, 0, 102);
+    g.add(0, 144, 255);
+    g.add(0, 255, 207);
+    g.add(51, 204, 102);
+    g.add(111, 255, 0);
+    g.add(191, 255, 0);
+    g.add(255, 240, 0);
+    g.add(255, 153, 102);
+    g.add(204, 51, 0);
+    g.add(153, 0, 0);
+    return g;
+}();
+
+Color.gradient.rainbow10 = new function() {
+    var g = new Color.gradient();
+    g.colors = Color.gradient.rainbow11.colors.slice();
+    g.colors.shift();
+    return g;
+}();
