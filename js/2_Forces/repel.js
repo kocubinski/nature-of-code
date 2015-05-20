@@ -28,7 +28,7 @@ Mover.prototype.attract = function(m) {
     f.normalize();
 
     var str = (params.G * this.mass * m.mass) / (d * d);
-    f.mult(str);
+    f.mult(-str);
     return f;
 };
 
@@ -107,5 +107,6 @@ if (ui.live) {
 } else {
     params.massFactor = 1;
     params.G = 0.3;
+    params.repel = false;
     setup();
 }
