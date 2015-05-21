@@ -120,11 +120,11 @@ if (ui.live) {
 
 function toggleRepulsion() {
     var btn = document.getElementById("btn-repel");
-    if (params.repel) {
-        params.repel = false;
+    if (!params.repel) {
+        params.repel = true;
         btn.innerText = "Attract!";
     } else {
-        params.repel = true;
+        params.repel = false;
         btn.innerText = "Repel!";
     }
 }
