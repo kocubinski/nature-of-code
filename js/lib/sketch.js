@@ -3,7 +3,7 @@ var Sketch = Sketch || {};
 
 /* Canvas */
 
-Sketch.sketch = function (pid, w, h) {
+Sketch.createCanvas = function (pid, w, h) {
     var c = document.createElement('canvas');
     c.width = w;
     c.height = h;
@@ -12,8 +12,12 @@ Sketch.sketch = function (pid, w, h) {
     c.style.marginRight = 'auto';
     c.style.marginLeft = 'auto';
     var parent = document.getElementById(pid);
-
     parent.appendChild(c);
+    return c;
+};
+
+Sketch.sketch = function (pid, w, h) {
+    var c = Sketch.createCanvas(pid, w, h);
     this.width = w;
     this.height = h;
     this.elem = c;
@@ -69,7 +73,7 @@ Sketch.sketch = function (pid, w, h) {
 
     this.destroy = function() {
         this.destroyed = true;
-        parent.removeChild(c);
+        this.elem.parentElement.removeChild(c);
     };
 
     this.tick();
@@ -95,10 +99,10 @@ Sketch.sketch.prototype.background = function(color) {
 };
 
 Sketch.sketch.prototype.circle = function(radius, location, opts) {
+    opts = opts || {};
     var c = this.ctx;
     c.beginPath();
     c.arc(location.x, location.y, radius, 2 * Math.PI, false);
-    //console.log(opts.color);
     c.fillStyle = opts.color || 'black';
     c.fill();
     if (opts.lineColor) {
@@ -120,6 +124,14 @@ Sketch.sketch.prototype.rectangle = function(x, y, w, h, opts) {
     c.stroke();
 };
 
+Sketch.sketch.prototype.line = function (x1, y1, x2, y2) {
+    var c = this.ctx;
+    c.beginPath();
+    c.moveTo(x1, y1);
+    c.lineTo(x2, y2);
+    c.stroke();
+};
+
 Sketch.sketch.prototype.dot = function(r, g, b, a, x, y) {
     if (!this.imageData) {
         this.imageData = this.ctx.createImageData(1, 1);
@@ -136,6 +148,7 @@ Sketch.sketch.prototype.clear = function(rgba) {
         this.ctx.fillRect(0, 0, this.elem.width, this.elem.height);
     }
 };
+
 
 Sketch.sketch.test = function() {
     var c = new Sketch.sketch('canvas', 600, 600);
@@ -215,23 +228,9 @@ Sketch.vector2.test = function() {
     return Sketch.vector2.add(v1, v2);
 };
 
-// extending math
-
-Math.constrain = function(n, min, max) {
-    n = n < min ? min : n;
-    n = n > max ? max : n;
-    return n;
-};
-
-Math.randomRange = function(min, max) {
-    return Math.random() * (max - min) + min;
-};
-
-window.isMobile = function() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-};
 
 /* Color */
+
 var Color = Color ||
         function(r, g, b) {
             this.r = r || 0;
@@ -348,3 +347,26 @@ Color.gradient.rainbow10 = new function() {
     g.colors.shift();
     return g;
 }();
+
+/* Math */
+
+Math.constrain = function(n, min, max) {
+    n = n < min ? min : n;
+    n = n > max ? max : n;
+    return n;
+};
+
+Math.randomRange = function(min, max) {
+    return Math.random() * (max - min) + min;
+};
+
+Math.radians = function(degrees) {
+    return 2 * Math.PI * (degrees / 360);
+};
+
+
+/* global scope */
+
+window.isMobile = function() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
