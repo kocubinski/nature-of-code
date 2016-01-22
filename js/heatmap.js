@@ -60,13 +60,14 @@ function tick() {
             if (s.mouse.pressed > 0) {
                 var x = Math.round(s.mouse.x),
                     y = Math.round(s.mouse.y),
-                    r = s.mouse.radius ? Math.round(s.mouse.radius) : 16,
-                    r = r % 2 == 0 ? r : r + 1,
+                    r = 24,
+                    // r = s.mouse.radius ? Math.round(s.mouse.radius) : 16,
+                    // r = r % 2 == 0 ? r : r + 1,
                     d = s.mouse.pressed == 1 ? 0.5 : -0.5;
-                if (s.mouse.isTouch) {
-                    r *= 8;
-                    d *= 4;
-                }
+                // if (s.mouse.isTouch) {
+                //     r *= 8;
+                //     d *= 4;
+                // }
                 //console.log(x, y, r);
                 // console.log(s.mouse);
                 applyHeat(x, y, r, d);
