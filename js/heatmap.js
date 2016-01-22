@@ -74,17 +74,22 @@ function tick() {
 
             updateHeatmap();
 
-            for (x = 0; x < size; x++) {
-                var row = heatmap[index][x];
-                for (y = 0; y < size; y++) {
-                    var color = g.get(heatmap[index][x][y]);
-                    data[y * s.width + x] =
-                        (255     << 24) |  // alpha
-                        (color.b << 16) |  // blue
-                        (color.g <<  8) |  // green
-                         color.r;          // red
+            var width = s.width;
+            var big = function() {
+                var map = heatmap[index];
+                for (x = 0; x < size; x++) {
+                    var row = map[x];
+                    for (y = 0; y < size; y++) {
+                        var color = g.get(row[y]);
+                        data[y * width + x] =
+                            (255     << 24) |  // alpha
+                            (color.b << 16) |  // blue
+                            (color.g <<  8) |  // green
+                            color.r;          // red
+                    }
                 }
-            }
+            };
+            big();
 
             imageData.data.set(buf8);
             s.ctx.putImageData(imageData, 0, 0);
@@ -93,25 +98,32 @@ function tick() {
 
 function updateHeatmap() {
     // Calculate the new heat value for each pixel
-    for(var i = 0; i < size; i++)
-        for(var j = 0; j < size; j++)
-            heatmap[index ^ 1][i][j] = calcPixel(i, j);
+    var map = heatmap[index ^ 1];
+    var _map = heatmap[index];
+
+    for(var i = 0; i < size; i++) {
+        var row = map[i];
+        for(var j = 0; j < size; j++) {
+            row[j] = calcPixel(i, j, _map);
+        }
+    }
 
     // flip the index to the next heatmap
     index ^= 1;
 }
 
-function calcPixel(i, j) {
+function calcPixel(i, j, heatmap) {
     var total = 0.0;
     var count = 0;
 
     for(var ii = -1; ii < 2; ii++) {
         for(var jj = -1; jj < 2; jj++) {
+            var row = heatmap[i + ii];
             if(i + ii < 0 || i + ii >= s.width || j + jj < 0 || j + jj >= s.height)
                 continue;
 
             ++count;
-            total += heatmap[index][i + ii][j + jj];
+            total += row[j + jj];
         }
     }
 
@@ -122,18 +134,19 @@ function calcPixel(i, j) {
 function applyHeat(i, j, r, delta) {
     // apply delta heat (or remove it) at location
     // (i, j) with radius r
+    var h = heatmap[index];
     for (var ii = -(r / 2); ii < (r / 2); ii++) {
+        var x = i + ii;
+        var row = h[x];
         for (var jj = -(r / 2); jj < (r / 2); jj++) {
+            var y = j + jj;
 
-            if (i + ii < 0 || i + ii >= s.width || j + jj < 0 || j + jj >= s.height)
+            if (x < 0 || x >= s.width || y < 0 || y >= s.height)
                 continue;
 
             // apply the heat
-            var x = i + ii;
-            var y = j + jj;
-            var h = heatmap[index];
-            heatmap[index][i + ii][j + jj] += delta;
-            heatmap[index][i + ii][j + jj] = Math.constrain(heatmap[index][i + ii][j + jj], 0.0, 20.0);
+            row[y] += delta;
+            row[y] = Math.constrain(row[y], 0.0, 20.0);
         }
     }
 }
